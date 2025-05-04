@@ -1,0 +1,55 @@
+<select
+    name="operators"
+    id="operators"
+    [ngModel]="selectedOpCode()"
+    (ngModelChange)="selectedOpCode.set($event)"
+>
+    <option selected value="">-- Select an Operator --</option>
+    @for(c of opService.allOps(); track c) {
+    <option [value]="c[0]">{{ c[1] }}</option>
+    }
+</select>
+
+@if(selectedOp()) {
+<div>
+    <p>Name: {{ selectedOp()!["name"] }}</p>
+    <p>Alternate Spelling: {{ selectedOp()!["appellation"] }}</p>
+    <p>Rarity: {{ selectedOp()!["rarity"] }}</p>
+    <p>Class: {{ selectedOp()!["profession"] }}</p>
+    <p>Subclass: {{ selectedOp()!["subProfessionId"] }}</p>
+    <p>Description: {{ selectedOp()!["description"] }}</p>
+    <p>Faction: {{ selectedOp()!["groupId"] }}</p>
+    <p>Nation: {{ selectedOp()!["nationId"] }}</p>
+    <p>Intro: {{ selectedOp()!["itemUsage"] }}</p>
+    <p>Intro line 2: {{ selectedOp()!["itemDesc"] }}</p>
+</div>
+
+<hr />
+
+<div>
+    @if(selectedFiles()['handbookAvgList'].length > 0) { @for(f of
+    selectedFiles()['handbookAvgList']; track f){
+    <p>{{ f["storySetName"] }} : {{ f["avgList"][0]["storyIntro"] }}</p>
+    } } @for(f of selectedFiles()['storyTextAudio']; track f){
+    <p>{{ f["storyTitle"] }} : {{ f["stories"][0]["storyText"] }}</p>
+    }
+</div>
+
+<hr />
+
+<div>
+    @for(m of selectedModules(); track m){
+    <p>
+        {{ m["uniEquipName"] }} - {{ m["typeIcon"] }} : {{ m["uniEquipDesc"] }}
+    </p>
+    }
+</div>
+
+<hr />
+
+<div>
+    @for(v of selectedVoices(); track v){
+    <p>{{ v["voiceTitle"] }}: {{ v["voiceText"] }}</p>
+    }
+</div>
+}

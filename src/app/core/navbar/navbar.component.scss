@@ -1,0 +1,33 @@
+nav {
+    position: sticky;
+    top: 0;
+
+    display: flex;
+    justify-content: space-between;
+
+    background-color: black;
+
+    font-size: 24px;
+
+    div.links {
+        display: flex;
+        flex-direction: row;
+
+        a {
+            padding: 14px 16px;
+
+            text-align: center;
+            text-decoration: none;
+
+            color: white;
+
+            &:hover:not(.active) {
+                background-color: yellow;
+            }
+
+            &.active {
+                background-color: green;
+            }
+        }
+    }
+}
