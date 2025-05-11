@@ -1,0 +1,16 @@
+<div (click)="advancePlayer($event)">
+    <canvas #dialogs width="1024px" height="576px" [style.z-index]="0"></canvas>
+    <canvas
+        #characters
+        width="1024px"
+        height="576px"
+        [style.z-index]="-1"
+    ></canvas>
+    <canvas
+        #bg_img
+        width="1024px"
+        height="576px"
+        [style.z-index]="-2"
+        [style.background-color]="'black'"
+    ></canvas>
+</div>

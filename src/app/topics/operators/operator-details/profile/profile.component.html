@@ -1,0 +1,40 @@
+<p>
+    {{ profile().name }} ({{ profile().appellation }}) |
+    {{ profile().rarity }} | {{ profile().class }} | {{ profile().subClass }} |
+    {{ profile().faction }} | {{ profile().classDescription }} |
+    {{ profile().description1 }} |
+    {{ profile().description2 }}
+</p>
+
+<hr />
+
+<table>
+    <caption>
+        {{
+            profile().basicInfo.title
+        }}
+    </caption>
+    @for (info of profile().basicInfo.body.split("[").slice(1); track $index) {
+    <tr>
+        <td>{{ info.split("]")[0].trim() }}</td>
+        <td>{{ info.split("]")[1].trim() }}</td>
+    </tr>
+    }
+</table>
+
+<hr />
+
+<table>
+    <caption>
+        {{
+            profile().physicalExam.title
+        }}
+    </caption>
+    @for (exam of profile().physicalExam.body.split("[").slice(1); track $index)
+    {
+    <tr>
+        <td>{{ exam.split("]")[0].trim() }}</td>
+        <td>{{ exam.split("]")[1].trim() }}</td>
+    </tr>
+    }
+</table>

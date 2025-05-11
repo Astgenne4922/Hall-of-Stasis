@@ -1,0 +1,39 @@
+div.enemies {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    figure {
+        display: inline-block;
+        vertical-align: top;
+        margin: 10px;
+
+        border-radius: 5px;
+
+        &.NORMAL {
+            background-color: #808080;
+            box-shadow: 0 4px 8px 0 #808080, 0 6px 20px 0 #808080;
+        }
+
+        &.ELITE {
+            background-color: #c75000;
+            box-shadow: 0 4px 8px 0 #c75000, 0 6px 20px 0 #c75000;
+        }
+
+        &.BOSS {
+            background-color: #ff0000;
+            box-shadow: 0 4px 8px 0 #ff0000, 0 6px 20px 0 #ff0000;
+        }
+
+        &,
+        * {
+            cursor: url('../../../../public/cursor\ link.png'), pointer;
+        }
+
+        figcaption {
+            width: 0;
+            min-width: 90%;
+            text-align: center;
+        }
+    }
+}

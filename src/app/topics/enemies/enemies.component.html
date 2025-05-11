@@ -1,3 +1,62 @@
-<p>
-  enemies works!
-</p>
+@if (selectedEnemyCode() !== "") {
+<input type="button" value="Back" (click)="selectedEnemyCode.set('')" />
+<app-enemy-details [code]="selectedEnemyCode()" />
+} @else {
+<div>
+    <select
+        name="ranks"
+        id="ranks"
+        [ngModel]="selectedRank()"
+        (ngModelChange)="selectedRank.set($event)"
+    >
+        <option value="" selected>-- Rank --</option>
+        @for (rank of enemyFilters.value()?.ranks; track $index) {
+        <option [value]="rank">{{ rank }}</option>
+        }
+    </select>
+    <select
+        name="categories"
+        id="categories"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event)"
+    >
+        <option value="" selected>-- Category --</option>
+        @for (category of enemyFilters.value()?.categories; track $index) {
+        <option [value]="category">{{ category }}</option>
+        }
+    </select>
+    <select
+        name="ranges"
+        id="ranges"
+        [ngModel]="selectedRange()"
+        (ngModelChange)="selectedRange.set($event)"
+    >
+        <option value="" selected>-- Range --</option>
+        @for (range of enemyFilters.value()?.ranges; track $index) {
+        <option [value]="range">{{ range }}</option>
+        }
+    </select>
+    <select
+        name="damageTypes"
+        id="damageTypes"
+        [ngModel]="selectedDamageType()"
+        (ngModelChange)="selectedDamageType.set($event)"
+    >
+        <option value="" selected>-- Danage Type --</option>
+        @for (damageType of enemyFilters.value()?.damageTypes; track $index) {
+        <option [value]="damageType">{{ damageType }}</option>
+        }
+    </select>
+</div>
+<div class="enemies">
+    @for(en of filteredEnemies(); track en) {
+    <figure [className]="en.rank">
+        <img
+            [src]="`${ENEMY_URL}/${en.code}.png`"
+            (click)="selectedEnemyCode.set(en.code)"
+        />
+        <figcaption>{{ en.name }}</figcaption>
+    </figure>
+    }
+</div>
+}

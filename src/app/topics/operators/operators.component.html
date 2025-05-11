@@ -1,55 +1,63 @@
-<select
-    name="operators"
-    id="operators"
-    [ngModel]="selectedOpCode()"
-    (ngModelChange)="selectedOpCode.set($event)"
->
-    <option selected value="">-- Select an Operator --</option>
-    @for(c of opService.allOps(); track c) {
-    <option [value]="c[0]">{{ c[1] }}</option>
-    }
-</select>
+@if (selectedOpCode() !== "") {
+<input type="button" value="Back" (click)="selectedOpCode.set('')" />
+<app-operator-details [code]="selectedOpCode()" />
+} @else {
 
-@if(selectedOp()) {
 <div>
-    <p>Name: {{ selectedOp()!["name"] }}</p>
-    <p>Alternate Spelling: {{ selectedOp()!["appellation"] }}</p>
-    <p>Rarity: {{ selectedOp()!["rarity"] }}</p>
-    <p>Class: {{ selectedOp()!["profession"] }}</p>
-    <p>Subclass: {{ selectedOp()!["subProfessionId"] }}</p>
-    <p>Description: {{ selectedOp()!["description"] }}</p>
-    <p>Faction: {{ selectedOp()!["groupId"] }}</p>
-    <p>Nation: {{ selectedOp()!["nationId"] }}</p>
-    <p>Intro: {{ selectedOp()!["itemUsage"] }}</p>
-    <p>Intro line 2: {{ selectedOp()!["itemDesc"] }}</p>
+    <select
+        name="rarities"
+        id="rarities"
+        [ngModel]="selectedRarity()"
+        (ngModelChange)="selectedRarity.set($event)"
+    >
+        <option value="" selected>-- Rarity --</option>
+        @for (rarity of characterFilters.value()?.rarities; track $index) {
+        <option [value]="rarity">{{ rarity }}</option>
+        }
+    </select>
+    <select
+        name="classes"
+        id="classes"
+        [ngModel]="selectedClass()"
+        (ngModelChange)="selectedClass.set($event)"
+    >
+        <option value="" selected>-- Class --</option>
+        @for (class of characterFilters.value()?.classes; track $index) {
+        <option [value]="class">{{ class }}</option>
+        }
+    </select>
+    <select
+        name="subClasses"
+        id="subClasses"
+        [ngModel]="selectedSubClass()"
+        (ngModelChange)="selectedSubClass.set($event)"
+    >
+        <option value="" selected>-- SubClass --</option>
+        @for (subClass of characterFilters.value()?.subClasses; track $index) {
+        <option [value]="subClass">{{ subClass }}</option>
+        }
+    </select>
+    <select
+        name="factions"
+        id="factions"
+        [ngModel]="selectedFaction()"
+        (ngModelChange)="selectedFaction.set($event)"
+    >
+        <option value="" selected>-- Faction --</option>
+        @for (faction of characterFilters.value()?.factions; track $index) {
+        <option [value]="faction">{{ faction }}</option>
+        }
+    </select>
 </div>
-
-<hr />
-
-<div>
-    @if(selectedFiles()['handbookAvgList'].length > 0) { @for(f of
-    selectedFiles()['handbookAvgList']; track f){
-    <p>{{ f["storySetName"] }} : {{ f["avgList"][0]["storyIntro"] }}</p>
-    } } @for(f of selectedFiles()['storyTextAudio']; track f){
-    <p>{{ f["storyTitle"] }} : {{ f["stories"][0]["storyText"] }}</p>
-    }
-</div>
-
-<hr />
-
-<div>
-    @for(m of selectedModules(); track m){
-    <p>
-        {{ m["uniEquipName"] }} - {{ m["typeIcon"] }} : {{ m["uniEquipDesc"] }}
-    </p>
-    }
-</div>
-
-<hr />
-
-<div>
-    @for(v of selectedVoices(); track v){
-    <p>{{ v["voiceTitle"] }}: {{ v["voiceText"] }}</p>
+<div class="characters">
+    @for(op of filteredCharacters(); track op) {
+    <figure [className]="op.rarity">
+        <img
+            [src]="op.code === 'char_1037_amiya3' ? `${AVATAR_URL}/${op.code}_2.png` : `${AVATAR_URL}/${op.code}.png`"
+            (click)="selectedOpCode.set(op.code)"
+        />
+        <figcaption>{{ op.name }}</figcaption>
+    </figure>
     }
 </div>
 }

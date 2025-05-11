@@ -1,0 +1,5 @@
+@for (file of files(); track $index) {
+<input type="button" (click)="switch.set($index)" [value]="file.title" />
+}
+
+<p>{{ files()[switch()].body }}</p>

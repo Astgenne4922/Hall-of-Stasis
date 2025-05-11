@@ -1,0 +1,69 @@
+@if (operator.hasValue()) {
+<div>
+    <input type="button" (click)="switch.set('profile')" value="Profile" />
+    <input type="button" (click)="switch.set('files')" value="Files" />
+    <input
+        type="button"
+        (click)="switch.set('voicelines')"
+        value="Voicelines"
+    />
+    @if (operator.value().modules) {
+    <input type="button" (click)="switch.set('modules')" value="Modules" />
+    }
+    <input type="button" (click)="switch.set('outfits')" value="Outfits" />
+</div>
+
+@switch (switch()) { @case ('profile') {
+<app-profile
+    [profile]="{
+        name: operator.value().name,
+        classDescription: operator.value().classDescription,
+        faction: operator.value().faction,
+        appellation: operator.value().appellation,
+        description1: operator.value().description1,
+        description2: operator.value().description2,
+        rarity: operator.value().rarity,
+        class: operator.value().class,
+        subClass: operator.value().subClass,
+        basicInfo: operator.value().files[0],
+        physicalExam: operator.value().files[1]
+    }"
+/>
+
+@if(operator.value().records) {
+<hr />
+
+<table>
+    <caption>
+        Operator Records
+    </caption>
+    @for (record of operator.value().records; track $index) {
+    <tr>
+        <td>{{ record.title }}</td>
+        <td>
+            @for (part of record.parts; track $index) {
+            <h4>{{ part.body }}</h4>
+            <p>{{ part.intro }}</p>
+            }
+        </td>
+    </tr>
+    }
+</table>
+} } @case ('files') {
+<app-files [files]="operator.value().files.slice(2)" />
+} @case ('voicelines') {
+<app-voicelines [voices]="operator.value().voices" />
+} @case ('modules') { @if (operator.value().modules) {
+<app-modules
+    [modules]="operator.value().modules!"
+    [subClass]="operator.value().subClass"
+/>
+} } @case ('outfits') {
+<app-outfits
+    [code]="code()"
+    [baseSkin]="operator.value().baseSkin"
+    [elite1Skin]="operator.value().elite1Skin"
+    [elite2Skin]="operator.value().elite2Skin"
+    [skins]="operator.value().skins"
+/>
+} } }

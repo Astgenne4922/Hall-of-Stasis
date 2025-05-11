@@ -21,6 +21,8 @@ nav {
 
             color: white;
 
+            cursor: url('../../../../public/cursor\ link.png'), pointer;
+
             &:hover:not(.active) {
                 background-color: yellow;
             }

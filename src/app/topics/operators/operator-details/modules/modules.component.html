@@ -1,0 +1,47 @@
+@for (module of modules(); track $index) {
+<input
+    type="button"
+    (click)="switch.set($index)"
+    [value]="module.code.toUpperCase() + ': ' + module.name"
+/>
+}
+
+<table>
+    <tr>
+        <td>
+            <h3>
+                {{ modules()[switch()].code.toUpperCase() }}:
+                {{ modules()[switch()].name }}
+            </h3>
+            <div style="position: relative">
+                <img
+                    class="module"
+                    [src]="`${MODULE_URL}/${modules()[switch()].icon.includes('001') ||
+                modules()[switch()].icon === 'original' ? 'default' : modules()[switch()].icon}.png`"
+                />
+                @if (modules()[switch()].icon.includes('001') ||
+                modules()[switch()].icon === 'original') {
+                <div
+                    style="
+                        position: absolute;
+                        width: 40px;
+                        height: 40px;
+                        top: 40%;
+                        left: 42%;
+                        opacity: 60%;
+                    "
+                >
+                    <img
+                        [src]="`${SUBCLASS_URL}/sub_${subClass()}_icon.png`"
+                        width="40px"
+                        height="40px !important"
+                    />
+                </div>
+                }
+            </div>
+        </td>
+        <td>
+            {{ modules()[switch()].description }}
+        </td>
+    </tr>
+</table>

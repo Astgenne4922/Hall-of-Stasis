@@ -1,3 +1,38 @@
-<p>
-  stories works!
-</p>
+<div>
+    <select
+        name="rarities"
+        id="rarities"
+        [ngModel]="selectedType()"
+        (ngModelChange)="selectedType.set($event)"
+    >
+        <option value="MAINLINE">Main Story</option>
+        <option value="ACTIVITY">Side Story</option>
+        <option value="MINI_ACTIVITY">Vignette</option>
+    </select>
+    <hr />
+    <div>
+        @for (story of filteredStories(); track $index) {
+        <input
+            type="button"
+            [class.active]="selectedStory() === story.code"
+            [value]="story.name"
+            (click)="selectedStory.set(story.code)"
+        />
+        }
+    </div>
+    <hr />
+    <div>
+        @for (stage of storyParts(); track $index) {
+        <input
+            type="button"
+            [class.active]="selectedChapter() === stage.url"
+            [value]="`${stage.code} - ${stage.name}`"
+            (click)="selectedChapter.set(stage.url)"
+        />
+        }
+    </div>
+</div>
+
+@if (selectedChapter()) {
+<app-story-player [storyUrl]="selectedChapter()" />
+}

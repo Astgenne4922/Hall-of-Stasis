@@ -1,0 +1,59 @@
+@if (enemy.hasValue()) {
+<table>
+    <caption>
+        <p>{{ enemy.value().rank }} - {{ enemy.value().categories }}</p>
+        <p>
+            {{ enemy.value().tag }}
+            -
+            {{ enemy.value().name }}
+        </p>
+        <p>{{ enemy.value().rangeType }} - {{ enemy.value().damageTypes }}</p>
+        <p>Life Penality: {{ enemy.value().lifePenality }}</p>
+        <p>Weight: {{ enemy.value().weight }}</p>
+    </caption>
+    <tr>
+        <td>
+            <img [src]="`${ENEMY_URL}/${code()}.png`" />
+        </td>
+        <td>
+            <table class="stats">
+                <tr>
+                    <td>HP</td>
+                    <td>{{ enemy.value().hp }}</td>
+                    <td>Movement Speed</td>
+                    <td>{{ enemy.value().speed }}</td>
+                </tr>
+                <tr>
+                    <td>ATK</td>
+                    <td>{{ enemy.value().atk }}</td>
+                    <td>Attack Speed</td>
+                    <td>{{ enemy.value().aspd }}</td>
+                </tr>
+                <tr>
+                    <td>DEF</td>
+                    <td>{{ enemy.value().def }}</td>
+                    <td>Elemental Resistance</td>
+                    <td>{{ enemy.value().eRes }}</td>
+                </tr>
+                <tr>
+                    <td>RES</td>
+                    <td>{{ enemy.value().res }}</td>
+                    <td>Effect Resistance</td>
+                    <td>{{ enemy.value().eRst }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<p>{{ enemy.value().description }}</p>
+<ul>
+    @for (a of enemy.value().abilities; track $index) { @switch (a.textFormat) {
+    @case ('TITLE') {
+    <h3>{{ a.text }}</h3>
+    } @case('NORMAL') {
+    <li class="normal">{{ a.text }}</li>
+    } @default {
+    <li class="silence">{{ a.text }}</li>
+    } } }
+</ul>
+}

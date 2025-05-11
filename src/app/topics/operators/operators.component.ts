@@ -1,36 +1,65 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { OperatorsService } from './operators.service';
+import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { httpResource } from '@angular/common/http';
+import { OperatorDetailsComponent } from './operator-details/operator-details.component';
 
 @Component({
     selector: 'app-operators',
     templateUrl: './operators.component.html',
     styleUrls: ['./operators.component.scss'],
-    imports: [FormsModule],
+    imports: [FormsModule, OperatorDetailsComponent],
 })
 export class OperatorsComponent {
-    public opService = inject(OperatorsService);
+    AVATAR_URL =
+        'https://raw.githubusercontent.com/akgcc/arkdata/refs/heads/main/assets/torappu/dynamicassets/arts/charavatars';
+
+    operatorCodes = httpResource<
+        {
+            code: string;
+            name: string;
+            rarity: string;
+            class: string;
+            subClass: string;
+            faction: string;
+        }[]
+    >({
+        url: '/characters/character_codes.json',
+    });
+    characterFilters = httpResource<{
+        rarities: string[];
+        classes: string[];
+        subClasses: string[];
+        factions: string[];
+    }>({
+        url: '/characters/character_filters.json',
+    });
 
     selectedOpCode = signal('');
-    selectedOp = computed(() =>
-        this.opService.getOperator(this.selectedOpCode())
-    );
-    selectedFiles = computed(() =>
-        this.opService.getOperatorFiles(this.selectedOpCode())
-    );
-    selectedModules = computed(() =>
-        this.opService.getModules(this.selectedOpCode())
-    );
-    selectedVoices = computed(() =>
-        this.opService.getVoices(this.selectedOpCode())
-    );
 
-    constructor() {
-        effect(() => {
-            console.log(this.selectedOp());
-            console.log(this.selectedFiles());
-            console.log(this.selectedModules());
-            console.log(this.selectedVoices());
-        });
-    }
+    selectedRarity = signal('');
+    selectedClass = signal('');
+    selectedSubClass = signal('');
+    selectedFaction = signal('');
+
+    filteredCharacters = computed(() => {
+        return this.operatorCodes
+            .value()
+            ?.filter(
+                (e) =>
+                    !this.selectedRarity() || this.selectedRarity() === e.rarity
+            )
+            .filter(
+                (e) => !this.selectedClass() || this.selectedClass() === e.class
+            )
+            .filter(
+                (e) =>
+                    !this.selectedSubClass() ||
+                    this.selectedSubClass() === e.subClass
+            )
+            .filter(
+                (e) =>
+                    !this.selectedFaction() ||
+                    this.selectedFaction() === e.faction
+            );
+    });
 }

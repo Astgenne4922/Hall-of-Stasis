@@ -1,0 +1,25 @@
+table.stats {
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+}
+
+ul {
+    list-style-type: none;
+}
+
+li.normal:before {
+    content: '•';
+}
+
+li.silence:before {
+    content: '⨯';
+}
