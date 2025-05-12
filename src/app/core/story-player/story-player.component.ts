@@ -16,6 +16,8 @@ import {
 export class StoryPlayerComponent {
     BG_URL =
         'https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/refs/heads/cn/assets/dyn/avg/backgrounds';
+    CHAR_URL =
+        'https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/refs/heads/cn/assets/dyn/avg/characters';
 
     dialogs_canvas =
         viewChild.required<ElementRef<HTMLCanvasElement>>('dialogs');
@@ -35,9 +37,10 @@ export class StoryPlayerComponent {
             });
     });
     index = 0;
+    isTyping = false;
 
     advancePlayer(event: MouseEvent) {
-        this.index++;
+        if (!this.isTyping) this.index++;
 
         if (this.index >= this.parsedLines()!.length) {
             console.log('FINITO');
@@ -47,7 +50,9 @@ export class StoryPlayerComponent {
         const dialogs_ctx =
             this.dialogs_canvas().nativeElement.getContext('2d')!;
         const bg_img_ctx = this.bg_img_canvas().nativeElement.getContext('2d')!;
-        let line = this.parsedLines()![this.index].parsed;
+        const char_ctx = this.char_canvas().nativeElement.getContext('2d')!;
+
+        let line: any = this.parsedLines()![this.index].parsed;
 
         console.log(this.parsedLines()![this.index].original);
         console.log(line);
@@ -55,22 +60,16 @@ export class StoryPlayerComponent {
         switch (line.type) {
             case 'background':
                 const img = new Image();
-                img.src = `${this.BG_URL}/${(line.data as any).image}.png`;
+                img.src = `${this.BG_URL}/${line.data.image}.png`;
                 img.onload = () => {
-                    // bg_img_ctx.scale(
-                    //     (line.data as any).xScale,
-                    //     (line.data as any).yScale
-                    // );
                     bg_img_ctx.drawImage(
                         img,
-                        (line.data as any).y,
-                        (line.data as any).x,
-                        1024,
-                        576,
-                        0,
-                        0,
-                        1024,
-                        576
+                        line.data.x -
+                            (1024 - 1024 / (line.data.xScale + 0.2)) / 2,
+                        line.data.y -
+                            (576 - 576 / (line.data.yScale + 0.2)) / 2,
+                        1024 * (line.data.xScale + 0.2),
+                        576 * (line.data.yScale + 0.2)
                     );
                 };
 
@@ -103,19 +102,109 @@ export class StoryPlayerComponent {
                     dialogs_ctx.fillRect(0, 0, 1024, 100);
 
                     if (line.data.speaker) {
-                        // dialogs_ctx.fillText();
-                        dialogs_ctx.fillStyle = 'red';
-                        dialogs_ctx.fillRect(100, 576 - 70, 170, 20);
+                        dialogs_ctx.font = '20px Arial, Helvetica, sans-serif';
+                        dialogs_ctx.fillStyle = '#7B7B7B';
+                        dialogs_ctx.textAlign = 'right';
+                        dialogs_ctx.fillText(line.data.speaker, 260, 576 - 55);
+                    }
+
+                    if (line.data.text) {
+                        dialogs_ctx.font = '18px Arial, Helvetica, sans-serif';
+                        dialogs_ctx.fillStyle = 'white';
+                        dialogs_ctx.textAlign = 'left';
+                        const lines = this.wrapText(
+                            line.data.text,
+                            dialogs_ctx
+                        );
+                        const metrics = dialogs_ctx.measureText(line.data.text);
+                        const lineHeight =
+                            metrics.fontBoundingBoxAscent +
+                            metrics.fontBoundingBoxDescent;
+
+                        if (!this.isTyping) {
+                            const typewriter = (lineIdx = 0, i = 0) => {
+                                const cursorX =
+                                    dialogs_ctx.measureText(
+                                        lines[lineIdx].slice(0, i + 1)
+                                    ).width -
+                                    dialogs_ctx.measureText(lines[lineIdx][i])
+                                        .width;
+                                dialogs_ctx.fillText(
+                                    lines[lineIdx][i],
+                                    300 + cursorX,
+                                    576 - 55 + lineHeight * lineIdx
+                                );
+                                if (this.isTyping) {
+                                    if (i + 1 < lines[lineIdx].length)
+                                        setTimeout(
+                                            () => typewriter(lineIdx, i + 1),
+                                            25
+                                        );
+                                    else if (lineIdx + 1 < lines.length)
+                                        setTimeout(
+                                            () => typewriter(lineIdx + 1, 0),
+                                            25
+                                        );
+                                    else this.isTyping = false;
+                                }
+                            };
+                            this.isTyping = true;
+                            typewriter();
+                        } else {
+                            this.isTyping = false;
+                            for (let i = 0; i < lines.length; i++) {
+                                dialogs_ctx.fillText(
+                                    lines[i],
+                                    300,
+                                    576 - 55 + lineHeight * i
+                                );
+                            }
+                        }
                     }
                 }
 
                 break;
-            default:
-                console.log(event);
+            case 'character':
+                char_ctx.clearRect(0, 0, 1024, 576);
 
-                (event.target! as any).click();
+                if (line.data.name) {
+                    if (line.data.name2) {
+                    } else {
+                        const img = new Image();
+                        if (line.data.name.split('_').length > 3)
+                            img.src = `${
+                                this.CHAR_URL
+                            }/${line.data.name.replace(
+                                /#\d$/,
+                                ''
+                            )}/${line.data.name.replace(/\d#/, '')}.png`;
+                        else img.src = `${this.CHAR_URL}/${line.data.name}.png`;
+                        img.onload = () => {
+                            char_ctx.drawImage(img, 62, 20, 900, 900);
+                            char_ctx.strokeRect(62, 20, 900, 900);
+                        };
+                    }
+                }
+                break;
+            default:
                 break;
         }
+    }
+
+    wrapText(text: string, ctx: CanvasRenderingContext2D) {
+        const lines: string[] = [''];
+        let i = 0;
+
+        for (const word of text.trim().split(' ')) {
+            if (ctx.measureText(`${lines[i]} ${word}`).width < 1024 - 300)
+                lines[i] = `${lines[i]} ${word}`.trim();
+            else {
+                lines.push(word);
+                i++;
+            }
+        }
+
+        return lines;
     }
 
     parseScriptLine(line: string) {
