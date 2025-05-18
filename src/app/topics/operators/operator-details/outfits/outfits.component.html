@@ -4,58 +4,61 @@
     </caption>
 
     @if (baseSkin()) {
-    <tr>
-        <td>
-            <img
-                class="skin"
-                [src]="`${SKIN_URL}/${code()}/${baseSkin()!.id.replace('#', '_')}.png`"
-            />
-        </td>
-        <td>
-            <h3>Base</h3>
-            <p>{{ baseSkin()!.description }}</p>
-        </td>
-    </tr>
-    } @if (elite1Skin()) {
-    <tr>
-        <td>
-            <img
-                class="skin"
-                [src]="`${SKIN_URL}/${code()}/${elite1Skin()!.id.replace('#', '_')}.png`"
-            />
-        </td>
-        <td>
-            <h3>Elite 1</h3>
-            <p>{{ elite1Skin()!.description }}</p>
-        </td>
-    </tr>
-    } @if (elite2Skin()) {
-    <tr>
-        <td>
-            <img
-                class="skin"
-                [src]="`${SKIN_URL}/${code()}/${elite2Skin()!.id.replace('#', '_')}.png`"
-            />
-        </td>
-        <td>
-            <h3>Elite 2</h3>
-            <p>{{ elite2Skin()!.description }}</p>
-        </td>
-    </tr>
-    } @for (skin of skins(); track $index) {
-    <tr>
-        <td>
-            <img
-                class="skin"
-                [src]="`${SKIN_URL}/${code()}/${skin.id.replace('@', '_').replace('#', '%23')}.png`"
-            />
-        </td>
-        <td>
-            <h3>{{ skin.name }}</h3>
-            <p>{{ skin.line1 }}</p>
-            <p>{{ skin.line2 }}</p>
-            <p>{{ skin.line3 }}</p>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <img
+                    class="skin"
+                    [src]="`${SKIN_URL}/${code()}/${baseSkin()!.id.replace('#', '_')}.png`"
+                />
+            </td>
+            <td>
+                <h3>Base</h3>
+                <p>{{ baseSkin()!.description }}</p>
+            </td>
+        </tr>
+    }
+    @if (elite1Skin()) {
+        <tr>
+            <td>
+                <img
+                    class="skin"
+                    [src]="`${SKIN_URL}/${code()}/${elite1Skin()!.id.replace('#', '_')}.png`"
+                />
+            </td>
+            <td>
+                <h3>Elite 1</h3>
+                <p>{{ elite1Skin()!.description }}</p>
+            </td>
+        </tr>
+    }
+    @if (elite2Skin()) {
+        <tr>
+            <td>
+                <img
+                    class="skin"
+                    [src]="`${SKIN_URL}/${code()}/${elite2Skin()!.id.replace('#', '_')}.png`"
+                />
+            </td>
+            <td>
+                <h3>Elite 2</h3>
+                <p>{{ elite2Skin()!.description }}</p>
+            </td>
+        </tr>
+    }
+    @for (skin of skins(); track $index) {
+        <tr>
+            <td>
+                <img
+                    class="skin"
+                    [src]="`${SKIN_URL}/${code()}/${skin.id.replace('@', '_').replace('#', '%23')}.png`"
+                />
+            </td>
+            <td>
+                <h3>{{ skin.name }}</h3>
+                <p>{{ skin.line1 }}</p>
+                <p>{{ skin.line2 }}</p>
+                <p>{{ skin.line3 }}</p>
+            </td>
+        </tr>
     }
 </table>

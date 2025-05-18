@@ -15,10 +15,10 @@
         }}
     </caption>
     @for (info of profile().basicInfo.body.split("[").slice(1); track $index) {
-    <tr>
-        <td>{{ info.split("]")[0].trim() }}</td>
-        <td>{{ info.split("]")[1].trim() }}</td>
-    </tr>
+        <tr>
+            <td>{{ info.split("]")[0].trim() }}</td>
+            <td>{{ info.split("]")[1].trim() }}</td>
+        </tr>
     }
 </table>
 
@@ -30,11 +30,13 @@
             profile().physicalExam.title
         }}
     </caption>
-    @for (exam of profile().physicalExam.body.split("[").slice(1); track $index)
-    {
-    <tr>
-        <td>{{ exam.split("]")[0].trim() }}</td>
-        <td>{{ exam.split("]")[1].trim() }}</td>
-    </tr>
+    @for (
+        exam of profile().physicalExam.body.split("[").slice(1);
+        track $index
+    ) {
+        <tr>
+            <td>{{ exam.split("]")[0].trim() }}</td>
+            <td>{{ exam.split("]")[1].trim() }}</td>
+        </tr>
     }
 </table>

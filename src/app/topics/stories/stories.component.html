@@ -12,27 +12,27 @@
     <hr />
     <div>
         @for (story of filteredStories(); track $index) {
-        <input
-            type="button"
-            [class.active]="selectedStory() === story.code"
-            [value]="story.name"
-            (click)="selectedStory.set(story.code)"
-        />
+            <input
+                type="button"
+                [class.active]="selectedStory() === story.code"
+                [value]="story.name"
+                (click)="selectedStory.set(story.code)"
+            />
         }
     </div>
     <hr />
     <div>
         @for (stage of storyParts(); track $index) {
-        <input
-            type="button"
-            [class.active]="selectedChapter() === stage.url"
-            [value]="`${stage.code} - ${stage.name}`"
-            (click)="selectedChapter.set(stage.url)"
-        />
+            <input
+                type="button"
+                [class.active]="selectedChapter() === stage.url"
+                [value]="`${stage.code} - ${stage.name}`"
+                (click)="selectedChapter.set(stage.url)"
+            />
         }
     </div>
 </div>
 
 @if (selectedChapter()) {
-<app-story-player [storyUrl]="selectedChapter()" />
+    <app-story-player [storyUrl]="selectedChapter()" />
 }

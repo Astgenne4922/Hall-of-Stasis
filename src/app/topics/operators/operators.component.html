@@ -1,63 +1,65 @@
 @if (selectedOpCode() !== "") {
-<input type="button" value="Back" (click)="selectedOpCode.set('')" />
-<app-operator-details [code]="selectedOpCode()" />
+    <input type="button" value="Back" (click)="selectedOpCode.set('')" />
+    <app-operator-details [code]="selectedOpCode()" />
 } @else {
-
-<div>
-    <select
-        name="rarities"
-        id="rarities"
-        [ngModel]="selectedRarity()"
-        (ngModelChange)="selectedRarity.set($event)"
-    >
-        <option value="" selected>-- Rarity --</option>
-        @for (rarity of characterFilters.value()?.rarities; track $index) {
-        <option [value]="rarity">{{ rarity }}</option>
+    <div>
+        <select
+            name="rarities"
+            id="rarities"
+            [ngModel]="selectedRarity()"
+            (ngModelChange)="selectedRarity.set($event)"
+        >
+            <option value="" selected>-- Rarity --</option>
+            @for (rarity of characterFilters.value()?.rarities; track $index) {
+                <option [value]="rarity">{{ rarity }}</option>
+            }
+        </select>
+        <select
+            name="classes"
+            id="classes"
+            [ngModel]="selectedClass()"
+            (ngModelChange)="selectedClass.set($event)"
+        >
+            <option value="" selected>-- Class --</option>
+            @for (class of characterFilters.value()?.classes; track $index) {
+                <option [value]="class">{{ class }}</option>
+            }
+        </select>
+        <select
+            name="subClasses"
+            id="subClasses"
+            [ngModel]="selectedSubClass()"
+            (ngModelChange)="selectedSubClass.set($event)"
+        >
+            <option value="" selected>-- SubClass --</option>
+            @for (
+                subClass of characterFilters.value()?.subClasses;
+                track $index
+            ) {
+                <option [value]="subClass">{{ subClass }}</option>
+            }
+        </select>
+        <select
+            name="factions"
+            id="factions"
+            [ngModel]="selectedFaction()"
+            (ngModelChange)="selectedFaction.set($event)"
+        >
+            <option value="" selected>-- Faction --</option>
+            @for (faction of characterFilters.value()?.factions; track $index) {
+                <option [value]="faction">{{ faction }}</option>
+            }
+        </select>
+    </div>
+    <div class="characters">
+        @for (op of filteredCharacters(); track op) {
+            <figure [className]="op.rarity">
+                <img
+                    [src]="op.code === 'char_1037_amiya3' ? `${AVATAR_URL}/${op.code}_2.png` : `${AVATAR_URL}/${op.code}.png`"
+                    (click)="selectedOpCode.set(op.code)"
+                />
+                <figcaption>{{ op.name }}</figcaption>
+            </figure>
         }
-    </select>
-    <select
-        name="classes"
-        id="classes"
-        [ngModel]="selectedClass()"
-        (ngModelChange)="selectedClass.set($event)"
-    >
-        <option value="" selected>-- Class --</option>
-        @for (class of characterFilters.value()?.classes; track $index) {
-        <option [value]="class">{{ class }}</option>
-        }
-    </select>
-    <select
-        name="subClasses"
-        id="subClasses"
-        [ngModel]="selectedSubClass()"
-        (ngModelChange)="selectedSubClass.set($event)"
-    >
-        <option value="" selected>-- SubClass --</option>
-        @for (subClass of characterFilters.value()?.subClasses; track $index) {
-        <option [value]="subClass">{{ subClass }}</option>
-        }
-    </select>
-    <select
-        name="factions"
-        id="factions"
-        [ngModel]="selectedFaction()"
-        (ngModelChange)="selectedFaction.set($event)"
-    >
-        <option value="" selected>-- Faction --</option>
-        @for (faction of characterFilters.value()?.factions; track $index) {
-        <option [value]="faction">{{ faction }}</option>
-        }
-    </select>
-</div>
-<div class="characters">
-    @for(op of filteredCharacters(); track op) {
-    <figure [className]="op.rarity">
-        <img
-            [src]="op.code === 'char_1037_amiya3' ? `${AVATAR_URL}/${op.code}_2.png` : `${AVATAR_URL}/${op.code}.png`"
-            (click)="selectedOpCode.set(op.code)"
-        />
-        <figcaption>{{ op.name }}</figcaption>
-    </figure>
-    }
-</div>
+    </div>
 }

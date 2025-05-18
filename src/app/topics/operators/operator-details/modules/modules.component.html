@@ -1,9 +1,9 @@
 @for (module of modules(); track $index) {
-<input
-    type="button"
-    (click)="switch.set($index)"
-    [value]="module.code.toUpperCase() + ': ' + module.name"
-/>
+    <input
+        type="button"
+        (click)="switch.set($index)"
+        [value]="module.code.toUpperCase() + ': ' + module.name"
+    />
 }
 
 <table>
@@ -19,24 +19,26 @@
                     [src]="`${MODULE_URL}/${modules()[switch()].icon.includes('001') ||
                 modules()[switch()].icon === 'original' ? 'default' : modules()[switch()].icon}.png`"
                 />
-                @if (modules()[switch()].icon.includes('001') ||
-                modules()[switch()].icon === 'original') {
-                <div
-                    style="
-                        position: absolute;
-                        width: 40px;
-                        height: 40px;
-                        top: 40%;
-                        left: 42%;
-                        opacity: 60%;
-                    "
-                >
-                    <img
-                        [src]="`${SUBCLASS_URL}/sub_${subClass()}_icon.png`"
-                        width="40px"
-                        height="40px !important"
-                    />
-                </div>
+                @if (
+                    modules()[switch()].icon.includes("001") ||
+                    modules()[switch()].icon === "original"
+                ) {
+                    <div
+                        style="
+                            position: absolute;
+                            width: 40px;
+                            height: 40px;
+                            top: 40%;
+                            left: 42%;
+                            opacity: 60%;
+                        "
+                    >
+                        <img
+                            [src]="`${SUBCLASS_URL}/sub_${subClass()}_icon.png`"
+                            width="40px"
+                            height="40px !important"
+                        />
+                    </div>
                 }
             </div>
         </td>

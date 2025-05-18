@@ -8,11 +8,10 @@
         <th>Text</th>
     </tr>
     @for (voice of voices(); track $index) {
-
-    <tr>
-        <td>{{ voice.id }}</td>
-        <td>{{ voice.name }}</td>
-        <td>{{ voice.body }}</td>
-    </tr>
+        <tr>
+            <td>{{ voice.id }}</td>
+            <td>{{ voice.name }}</td>
+            <td>{{ voice.body }}</td>
+        </tr>
     }
 </table>
