@@ -1,20 +1,5 @@
 import { Injectable } from '@angular/core';
-
-export type genericCommand = {
-    command: string;
-    parameters: {
-        [key: string]: string;
-    } | null;
-    content: string | null;
-};
-
-export type dialogCommand = {
-    command: 'dialog';
-    parameters: {
-        speaker: string | null;
-    };
-    content: string;
-};
+import { dialogCommand, genericCommand } from './command.model';
 
 @Injectable({
     providedIn: 'root',
@@ -27,10 +12,11 @@ export class ScriptParserService {
             return {
                 command: match[1].toLowerCase(),
                 parameters: [
-                    ...(match[2]?.matchAll(/(\w+)\s*=\s*"?([^",\s]*)"?/g) ??
-                        []),
+                    ...(match[2]?.matchAll(
+                        /(\w+)\s*=\s*(?:"([^"]*)"|([^",\s]*))/g,
+                    ) ?? []),
                 ].reduce(
-                    (acc: any, m) => ({ ...(acc ?? {}), [m[1]]: m[2] }),
+                    (acc: any, m) => ({ ...(acc ?? {}), [m[1]]: m[2] ?? m[3] }),
                     null,
                 ),
                 content: match[3] ?? null,
