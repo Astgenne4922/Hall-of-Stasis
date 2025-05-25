@@ -12,6 +12,8 @@ const CHAR_URL =
     providedIn: 'root',
 })
 export class StoryPlayerService {
+    private moveImageAnimationRequest!: number;
+
     drawBlocker(command: genericCommand, ctx: CanvasRenderingContext2D) {
         ctx.clearRect(0, 0, 1024, 576);
 
@@ -49,6 +51,7 @@ export class StoryPlayerService {
     }
 
     drawImage(command: genericCommand, ctx: CanvasRenderingContext2D) {
+        cancelAnimationFrame(this.moveImageAnimationRequest);
         if (!command.parameters) {
             ctx.clearRect(0, 0, 1024, 576);
             return;
@@ -107,7 +110,7 @@ export class StoryPlayerService {
         let currentYScale = +command.parameters!['yScaleFrom'];
         const transform = () => {
             if (time >= +command.parameters!['duration']) return;
-            requestAnimationFrame(transform);
+            this.moveImageAnimationRequest = requestAnimationFrame(transform);
 
             ctx.drawImage(
                 original,
