@@ -1,0 +1,12 @@
+div {
+    display: flex;
+    height: 70%;
+    justify-content: center;
+}
+
+canvas {
+    margin: 10px;
+    aspect-ratio: 16/9;
+    min-width: 0;
+    border: 2px solid red;
+}

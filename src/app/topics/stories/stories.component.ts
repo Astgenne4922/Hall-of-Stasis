@@ -2,12 +2,13 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StoryPlayerComponent } from '../../core/story-player/story-player.component';
+import { NewStoryPlayerComponent } from '../../core/new-story-player/new-story-player.component';
 
 @Component({
     selector: 'app-stories',
     templateUrl: './stories.component.html',
     styleUrls: ['./stories.component.scss'],
-    imports: [FormsModule, StoryPlayerComponent],
+    imports: [FormsModule, StoryPlayerComponent, NewStoryPlayerComponent],
 })
 export class StoriesComponent {
     storyCodes = httpResource<{ code: string; name: string; type: string }[]>({
@@ -33,7 +34,7 @@ export class StoriesComponent {
     }>(() => `/stories/${this.selectedStory()}/story.json`);
 
     filteredStories = computed(() =>
-        this.storyCodes.value()?.filter((s) => s.type === this.selectedType())
+        this.storyCodes.value()?.filter((s) => s.type === this.selectedType()),
     );
     storyParts = computed(() => {
         const stages: { code: string; name: string; url: string }[] = [];
@@ -63,7 +64,7 @@ export class StoriesComponent {
                             stage.interlude
                         }.txt`,
                     });
-            }
+            },
         );
 
         return stages;
