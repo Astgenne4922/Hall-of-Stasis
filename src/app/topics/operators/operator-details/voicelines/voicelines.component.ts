@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { Voice } from '../operator.model';
 
 @Component({
-    selector: 'app-voicelines',
+    selector: 'hos-voicelines',
     templateUrl: './voicelines.component.html',
     styleUrls: ['./voicelines.component.scss'],
 })

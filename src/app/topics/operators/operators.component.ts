@@ -4,7 +4,7 @@ import { httpResource } from '@angular/common/http';
 import { OperatorDetailsComponent } from './operator-details/operator-details.component';
 
 @Component({
-    selector: 'app-operators',
+    selector: 'hos-operators',
     templateUrl: './operators.component.html',
     styleUrls: ['./operators.component.scss'],
     imports: [FormsModule, OperatorDetailsComponent],
@@ -44,22 +44,9 @@ export class OperatorsComponent {
     filteredCharacters = computed(() => {
         return this.operatorCodes
             .value()
-            ?.filter(
-                (e) =>
-                    !this.selectedRarity() || this.selectedRarity() === e.rarity
-            )
-            .filter(
-                (e) => !this.selectedClass() || this.selectedClass() === e.class
-            )
-            .filter(
-                (e) =>
-                    !this.selectedSubClass() ||
-                    this.selectedSubClass() === e.subClass
-            )
-            .filter(
-                (e) =>
-                    !this.selectedFaction() ||
-                    this.selectedFaction() === e.faction
-            );
+            ?.filter((e) => !this.selectedRarity() || this.selectedRarity() === e.rarity)
+            .filter((e) => !this.selectedClass() || this.selectedClass() === e.class)
+            .filter((e) => !this.selectedSubClass() || this.selectedSubClass() === e.subClass)
+            .filter((e) => !this.selectedFaction() || this.selectedFaction() === e.faction);
     });
 }

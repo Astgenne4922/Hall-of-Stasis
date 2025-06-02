@@ -19,7 +19,7 @@
 
     @switch (switch()) {
         @case ("profile") {
-            <app-profile
+            <hos-profile
                 [profile]="{
                     name: operator.value().name,
                     classDescription: operator.value().classDescription,
@@ -57,21 +57,21 @@
             }
         }
         @case ("files") {
-            <app-files [files]="operator.value().files.slice(2)" />
+            <hos-files [files]="operator.value().files.slice(2)" />
         }
         @case ("voicelines") {
-            <app-voicelines [voices]="operator.value().voices" />
+            <hos-voicelines [voices]="operator.value().voices" />
         }
         @case ("modules") {
             @if (operator.value().modules) {
-                <app-modules
+                <hos-modules
                     [modules]="operator.value().modules!"
                     [subClass]="operator.value().subClass"
                 />
             }
         }
         @case ("outfits") {
-            <app-outfits
+            <hos-outfits
                 [code]="code()"
                 [baseSkin]="operator.value().baseSkin"
                 [elite1Skin]="operator.value().elite1Skin"

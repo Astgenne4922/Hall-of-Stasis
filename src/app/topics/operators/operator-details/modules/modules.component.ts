@@ -2,7 +2,7 @@ import { Component, input, signal } from '@angular/core';
 import { Module } from '../operator.model';
 
 @Component({
-    selector: 'app-modules',
+    selector: 'hos-modules',
     templateUrl: './modules.component.html',
     styleUrls: ['./modules.component.scss'],
 })

@@ -8,23 +8,15 @@ import { ModulesComponent } from './modules/modules.component';
 import { OutfitsComponent } from './outfits/outfits.component';
 
 @Component({
-    selector: 'app-operator-details',
+    selector: 'hos-operator-details',
     templateUrl: './operator-details.component.html',
     styleUrls: ['./operator-details.component.scss'],
-    imports: [
-        ProfileComponent,
-        FilesComponent,
-        VoicelinesComponent,
-        ModulesComponent,
-        OutfitsComponent,
-    ],
+    imports: [ProfileComponent, FilesComponent, VoicelinesComponent, ModulesComponent, OutfitsComponent],
 })
 export class OperatorDetailsComponent {
     code = input.required<string>();
 
-    operator = httpResource<Operator>(
-        () => `/characters/${this.code()}/character.json`
-    );
+    operator = httpResource<Operator>(() => `/characters/${this.code()}/character.json`);
 
     switch = signal('profile');
 

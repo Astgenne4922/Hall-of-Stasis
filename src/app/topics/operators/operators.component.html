@@ -1,6 +1,6 @@
 @if (selectedOpCode() !== "") {
     <input type="button" value="Back" (click)="selectedOpCode.set('')" />
-    <app-operator-details [code]="selectedOpCode()" />
+    <hos-operator-details [code]="selectedOpCode()" />
 } @else {
     <div>
         <select

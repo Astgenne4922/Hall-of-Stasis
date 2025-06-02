@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 
 @Component({
-    selector: 'app-profile',
+    selector: 'hos-profile',
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.scss'],
 })

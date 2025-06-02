@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { BaseSkin, Skin } from '../operator.model';
 
 @Component({
-    selector: 'app-outfits',
+    selector: 'hos-outfits',
     templateUrl: './outfits.component.html',
     styleUrls: ['./outfits.component.scss'],
 })

@@ -3,7 +3,7 @@ import { Component, effect, input } from '@angular/core';
 import { Enemy } from './enemy.model';
 
 @Component({
-    selector: 'app-enemy-details',
+    selector: 'hos-enemy-details',
     templateUrl: './enemy-details.component.html',
     styleUrls: ['./enemy-details.component.scss'],
 })

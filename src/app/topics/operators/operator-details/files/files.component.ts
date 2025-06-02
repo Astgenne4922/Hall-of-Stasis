@@ -1,7 +1,7 @@
 import { Component, input, signal } from '@angular/core';
 
 @Component({
-    selector: 'app-files',
+    selector: 'hos-files',
     templateUrl: './files.component.html',
     styleUrls: ['./files.component.scss'],
 })

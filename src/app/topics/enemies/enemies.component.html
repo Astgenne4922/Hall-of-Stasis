@@ -1,6 +1,6 @@
 @if (selectedEnemyCode() !== "") {
     <input type="button" value="Back" (click)="selectedEnemyCode.set('')" />
-    <app-enemy-details [code]="selectedEnemyCode()" />
+    <hos-enemy-details [code]="selectedEnemyCode()" />
 } @else {
     <div>
         <select

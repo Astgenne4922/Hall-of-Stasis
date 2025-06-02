@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { EnemyDetailsComponent } from './enemy-details/enemy-details.component';
 
 @Component({
-    selector: 'app-enemies',
+    selector: 'hos-enemies',
     templateUrl: './enemies.component.html',
     styleUrls: ['./enemies.component.scss'],
     imports: [FormsModule, EnemyDetailsComponent],
@@ -44,26 +44,14 @@ export class EnemiesComponent {
     filteredEnemies = computed(() => {
         return this.enemyCodes
             .value()
-            ?.filter(
-                (e) => !this.selectedRank() || this.selectedRank() === e.rank
-            )
-            .filter(
-                (e) =>
-                    !this.selectedCategory() ||
-                    e.categories.includes(this.selectedCategory())
-            )
+            ?.filter((e) => !this.selectedRank() || this.selectedRank() === e.rank)
+            .filter((e) => !this.selectedCategory() || e.categories.includes(this.selectedCategory()))
             .filter(
                 (e) =>
                     !this.selectedRange() ||
                     this.selectedRange() === e.rangeType ||
-                    ((this.selectedRange() === 'MELEE' ||
-                        this.selectedRange() === 'RANGED') &&
-                        e.rangeType === 'ALL')
+                    ((this.selectedRange() === 'MELEE' || this.selectedRange() === 'RANGED') && e.rangeType === 'ALL'),
             )
-            .filter(
-                (e) =>
-                    !this.selectedDamageType() ||
-                    e.damageTypes.includes(this.selectedDamageType())
-            );
+            .filter((e) => !this.selectedDamageType() || e.damageTypes.includes(this.selectedDamageType()));
     });
 }
