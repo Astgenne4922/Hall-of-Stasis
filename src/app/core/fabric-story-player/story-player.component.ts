@@ -1,9 +1,8 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, OnInit } from '@angular/core';
-import { FabricImage, StaticCanvas } from 'fabric';
-import { genericCommand } from './services/command.model';
+import { StaticCanvas } from 'fabric';
+import { ImageCommandsService } from './services/image-commands/image-commands.service';
 import { ScriptParserService } from './services/script-parser.service';
-import { BG_URL, HEIGHT, WIDTH } from './story-player.constants';
 import {
     DECISION_BUTTON_GROUP1,
     DECISION_BUTTON_GROUP2,
@@ -13,7 +12,7 @@ import {
     SUBTITLE_TEXTBOX,
 } from './services/text-commands/text-commands.constants';
 import { TextCommandsService } from './services/text-commands/text-commands.service';
-import { ImageCommandsService } from './services/image-commands/image-commands.service';
+import { HEIGHT, WIDTH } from './story-player.constants';
 
 @Component({
     selector: 'hos-story-player',
@@ -50,6 +49,7 @@ export class FabricStoryPlayerComponent implements OnInit {
         this.canvas = new StaticCanvas('player', {
             width: WIDTH,
             height: HEIGHT,
+            backgroundColor: 'black',
         });
         this.resizeCanvas();
 
@@ -71,8 +71,9 @@ export class FabricStoryPlayerComponent implements OnInit {
         }
 
         if (
-            this.textCommandsService.handleTyping(this.parsedLines()![this.index].parsed) ||
+            this.textCommandsService.handleTyping(this.canvas, this.parsedLines()![this.index].parsed) ||
             this.textCommandsService.handleChoice(
+                this.canvas,
                 (event.offsetX * WIDTH) / this.canvas.getElement().clientWidth,
                 (event.offsetY * HEIGHT) / this.canvas.getElement().clientHeight,
             ) ||
@@ -110,55 +111,64 @@ export class FabricStoryPlayerComponent implements OnInit {
                 else this.click();
                 break;
             case 'dialog':
-                this.textCommandsService.handleDialog(line.parameters?.speaker ?? '', line.content);
-
+                if (line.content)
+                    this.textCommandsService.handleDialog(this.canvas, line.content, line.parameters?.['name']);
+                else
+                    this.textCommandsService.clearDialog(this.canvas, {
+                        fadetime: line.parameters?.['fadetime'] ? +line.parameters?.['fadetime'] * 1000 : undefined,
+                        block: line.parameters?.['block'] === 'true',
+                    });
                 break;
             case 'multiline':
-                this.textCommandsService.handleMultiline(
-                    line.parameters!['name'],
-                    line.content!,
-                    line.parameters!['delay'] ? +line.parameters!['delay'] * 1000 : 25,
-                    line.parameters!['end'] ? true : false,
-                );
+                this.textCommandsService.handleMultiline(this.canvas, line.parameters!['name'], line.content!, {
+                    delay: line.parameters!['delay'] ? +line.parameters!['delay'] * 1000 : undefined,
+                    end: line.parameters!['end'] ? true : false,
+                });
 
                 break;
             case 'subtitle':
-                if (!line.parameters) SUBTITLE_TEXTBOX.set('visible', false);
+                if (!line.parameters) this.textCommandsService.clearSubtitle();
                 else
-                    this.textCommandsService.handleSubtitle(
-                        line.parameters!['text'],
-                        +line.parameters!['x'],
-                        +line.parameters!['y'],
-                        line.parameters!['alignment'],
-                        +line.parameters!['size'],
-                        +line.parameters!['width'],
-                        +line.parameters!['delay'] * 1000,
-                    );
+                    this.textCommandsService.handleSubtitle(this.canvas, line.parameters!['text'], {
+                        x: +line.parameters!['x'],
+                        y: +line.parameters!['y'],
+                        textAlign: line.parameters!['alignment'],
+                        fontSize: +line.parameters!['size'],
+                        width: +line.parameters!['width'],
+                        delay: +line.parameters!['delay'] * 1000,
+                    });
 
                 break;
             case 'sticker':
                 if (!line.parameters!['text']) {
-                    let duration = line.parameters!['duration'] ?? line.parameters!['fadetime'] ?? 0;
-                    this.textCommandsService.handleStickerClear(line.parameters!['id'], +duration * 1000);
+                    let duration = line.parameters!['duration'] ?? line.parameters!['fadetime'] ?? undefined;
+                    this.textCommandsService.clearSticker(this.canvas, {
+                        id: line.parameters!['id'],
+                        fadetime: duration ? +duration * 1000 : undefined,
+                        block: line.parameters!['block'] === 'true',
+                    });
                     this.click();
                 } else {
                     this.textCommandsService.handleSticker(
+                        this.canvas,
                         line.parameters!['id'],
                         line.parameters!['text'],
-                        line.parameters!['x'] ? +line.parameters!['x'] : null,
-                        line.parameters!['y'] ? +line.parameters!['y'] : null,
-                        line.parameters!['alignment'] ?? 'left',
-                        +(line.parameters!['fontSize'] ?? 24),
-                        +(line.parameters!['delay'] ?? 0.025) * 1000,
-                        +(line.parameters!['width'] ?? 0),
-                        +(line.parameters!['duration'] ?? 0) * 1000,
+                        {
+                            x: line.parameters!['x'] ? +line.parameters!['x'] : undefined,
+                            y: line.parameters!['y'] ? +line.parameters!['y'] : undefined,
+                            textAlign: line.parameters!['alignment'],
+                            fontSize: line.parameters!['fontSize'] ? +line.parameters!['fontSize'] : undefined,
+                            delay: line.parameters!['delay'] ? +line.parameters!['delay'] * 1000 : undefined,
+                            width: line.parameters!['width'] ? +line.parameters!['width'] : undefined,
+                            fadetime: line.parameters!['duration'] ? +line.parameters!['duration'] * 1000 : undefined,
+                            block: line.parameters!['block'] === 'true',
+                        },
                     );
-                    if (line.parameters!['block'] === 'false') this.click();
                 }
 
                 break;
             case 'stickerclear':
-                this.textCommandsService.handleStickerClear();
+                this.textCommandsService.clearSticker(this.canvas);
                 this.click();
                 break;
             case 'decision':

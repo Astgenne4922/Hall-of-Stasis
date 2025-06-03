@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { dialogCommand, genericCommand } from './command.model';
+import { Command } from './command.model';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ScriptParserService {
-    parseScriptLine(line: string): genericCommand | dialogCommand {
+    parseScriptLine(line: string): Command {
         let match = line.match(/^\[(\w+)(?:\((.*)\))?\](?:\s*(.+))?$/);
 
         if (match) {
@@ -22,7 +22,7 @@ export class ScriptParserService {
         match = line.match(/^\[name="(.*?)"\](.+)$/);
         return {
             command: 'dialog',
-            parameters: { speaker: match?.[1] ?? null },
+            parameters: match?.[1] ? { name: match?.[1] } : null,
             content: match?.[2] ?? line,
         };
     }

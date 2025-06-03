@@ -1,17 +1,18 @@
 import { inject, Injectable } from '@angular/core';
+import { Group, Point, StaticCanvas, Textbox } from 'fabric';
+import { Command } from '../command.model';
+import { fadein, fadeout } from '../common.animation';
+import { ScriptParserService } from '../script-parser.service';
 import {
-    SPEAKER_TEXTBOX,
-    DIALOG_GROUP,
-    DIALOG_TEXTBOX,
-    SUBTITLE_TEXTBOX,
     DECISION_BUTTON_GROUP1,
     DECISION_BUTTON_GROUP2,
     DECISION_BUTTON_GROUP3,
+    DIALOG_GROUP,
+    DIALOG_TEXTBOX,
+    SPEAKER_TEXTBOX,
     STICKER_GROUP,
+    SUBTITLE_TEXTBOX,
 } from './text-commands.constants';
-import { ScriptParserService } from '../script-parser.service';
-import { Group, Point, Textbox } from 'fabric';
-import { dialogCommand, genericCommand } from '../command.model';
 
 @Injectable({
     providedIn: 'root',
@@ -31,132 +32,110 @@ export class TextCommandsService {
 
     typewriterInterval: ReturnType<typeof setInterval> | null = null;
 
-    handleDialog(speaker: string, text: string | null) {
+    handleDialog(canvas: StaticCanvas, text: string, speaker?: string) {
         this.multiline = null;
         this.hasMultilineEnded = false;
 
-        if (speaker) SPEAKER_TEXTBOX.set('text', speaker);
-        else SPEAKER_TEXTBOX.set('text', '');
+        SPEAKER_TEXTBOX.set('text', speaker ?? '');
 
-        if (text) {
-            DIALOG_GROUP.set('visible', true);
+        DIALOG_GROUP.set('visible', true);
 
-            const parsedText = this.parserService.parseRichText(text!);
-            DIALOG_TEXTBOX.set('styles', parsedText.styles);
-
-            let letterIdx = 0;
-            this.typewriterInterval = setInterval(() => {
-                DIALOG_TEXTBOX.set('text', parsedText.text.slice(0, letterIdx));
-                DIALOG_TEXTBOX.canvas?.renderAll();
-
-                letterIdx++;
-                if (letterIdx > parsedText.text.length) {
-                    clearInterval(this.typewriterInterval!);
-                    this.typewriterInterval = null;
-                }
-            }, 25);
+        this.createTypewriterEffect(canvas, DIALOG_TEXTBOX, text, { delay: 25 });
+    }
+    clearDialog(canvas: StaticCanvas, options?: { fadetime?: number; block?: boolean }) {
+        if (options?.fadetime) {
+            if (options?.block) this.isInAnimation = true;
+            fadeout(canvas, DIALOG_GROUP, options.fadetime, () => {
+                DIALOG_GROUP.set('visible', false);
+                canvas.renderAll();
+                DIALOG_GROUP.set('opacity', 1);
+                DIALOG_TEXTBOX.set('text', '');
+                if (options?.block) this.isInAnimation = false;
+            });
         } else {
             DIALOG_GROUP.set('visible', false);
             DIALOG_TEXTBOX.set('text', '');
         }
     }
 
-    handleMultiline(name: string, text: string, delay: number, end: boolean) {
+    handleMultiline(canvas: StaticCanvas, name: string, text: string, options?: { delay?: number; end: boolean }) {
         SPEAKER_TEXTBOX.set('text', name);
 
         if (!this.multiline || this.hasMultilineEnded) this.multiline = [];
         this.multiline.push(text);
 
-        this.hasMultilineEnded = end;
+        this.hasMultilineEnded = options?.end ?? false;
 
-        let letterIdx = 0;
-        this.typewriterInterval = setInterval(() => {
-            DIALOG_TEXTBOX.set({
-                ...this.parserService.parseRichText(this.multiline!.slice(0, -1).join('') + text.slice(0, letterIdx)),
-            });
-            DIALOG_TEXTBOX.canvas?.renderAll();
-
-            letterIdx++;
-            if (letterIdx > this.parserService.parseRichText(text).text.length) {
-                clearInterval(this.typewriterInterval!);
-                this.typewriterInterval = null;
-            }
-        }, delay);
+        this.createTypewriterEffect(canvas, DIALOG_TEXTBOX, text, {
+            multi: this.multiline,
+            delay: options?.delay ?? 25,
+        });
 
         DIALOG_GROUP.set('visible', true);
     }
 
     handleSubtitle(
+        canvas: StaticCanvas,
         text: string,
-        x: number,
-        y: number,
-        textAlign: string,
-        fontSize: number,
-        width: number,
-        delay: number,
+        options: { x: number; y: number; textAlign: string; fontSize: number; width: number; delay: number },
     ) {
-        const parsedText = this.parserService.parseRichText(text);
-
         SUBTITLE_TEXTBOX.set({
             text: '',
-            left: x,
-            top: y,
-            textAlign: textAlign,
-            fontSize: fontSize,
-            width: width,
-            styles: parsedText.styles,
+            left: options.x,
+            top: options.y,
+            textAlign: options.textAlign,
+            fontSize: options.fontSize,
+            width: options.width,
         });
 
-        let letterIdx = 0;
-        this.typewriterInterval = setInterval(() => {
-            SUBTITLE_TEXTBOX.set('text', parsedText.text.slice(0, letterIdx));
-            SUBTITLE_TEXTBOX.canvas?.renderAll();
+        this.createTypewriterEffect(canvas, SUBTITLE_TEXTBOX, text, { delay: options.delay });
 
-            letterIdx++;
-            if (letterIdx > parsedText.text.length) {
-                clearInterval(this.typewriterInterval!);
-                this.typewriterInterval = null;
-            }
-        }, delay);
         SUBTITLE_TEXTBOX.set('visible', true);
+    }
+    clearSubtitle() {
+        SUBTITLE_TEXTBOX.set('visible', false);
     }
 
     handleSticker(
+        canvas: StaticCanvas,
         id: string,
         text: string,
-        x: number | null,
-        y: number | null,
-        textAlign: string,
-        fontSize: number,
-        delay: number,
-        width: number,
-        duration: number,
+        options?: {
+            x?: number;
+            y?: number;
+            textAlign?: string;
+            fontSize?: number;
+            width?: number;
+            delay?: number;
+            fadetime?: number;
+            block: boolean;
+        },
     ) {
         if (!this.stickers[id]) {
             this.stickers[id] = {
                 box: new Textbox('', {
                     fontFamily: 'Tahoma, sans-serif',
                     fill: 'white',
-                    textAlign: textAlign,
-                    fontSize: fontSize,
-                    left: x!,
-                    top: y!,
-                    width: width,
-                    opacity: duration ? 0 : 1,
+                    textAlign: options?.textAlign ?? 'left',
+                    fontSize: options?.fontSize ?? 24,
+                    left: options?.x!,
+                    top: options?.y!,
+                    width: options?.width,
+                    opacity: options?.fadetime ? 0 : 1,
                 }),
                 text: [],
             };
             STICKER_GROUP.add(this.stickers[id].box);
         } else {
-            if (x && y) {
+            if (options?.x && options.y) {
                 this.stickers[id].box.set({
                     text: '',
-                    textAlign: textAlign,
-                    fontSize: fontSize,
-                    left: x,
-                    top: y,
-                    width: width,
-                    opacity: duration ? 0 : 1,
+                    textAlign: options.textAlign ?? 'left',
+                    fontSize: options.fontSize ?? 24,
+                    left: options.x,
+                    top: options.y,
+                    width: options.width,
+                    opacity: options.fadetime ? 0 : 1,
                 });
                 this.stickers[id].text = [];
             }
@@ -164,50 +143,30 @@ export class TextCommandsService {
 
         this.stickers[id].text.push(text);
 
-        let letterIdx = 0;
-        this.typewriterInterval = setInterval(() => {
-            this.stickers[id].box.set({
-                ...this.parserService.parseRichText(
-                    this.stickers[id].text.slice(0, -1).join('') + text.slice(0, letterIdx),
-                ),
+        this.createTypewriterEffect(canvas, this.stickers[id].box, text, {
+            multi: this.stickers[id].text,
+            delay: options?.delay ?? 25,
+        });
+
+        if (options?.fadetime) {
+            if (options.block) this.isInAnimation = true;
+            fadein(canvas, this.stickers[id].box, options.fadetime, () => {
+                if (options.block) this.isInAnimation = false;
             });
-            STICKER_GROUP.canvas?.renderAll();
-
-            letterIdx++;
-            if (letterIdx > this.parserService.parseRichText(text).text.length) {
-                clearInterval(this.typewriterInterval!);
-                this.typewriterInterval = null;
-            }
-        }, delay);
-
-        if (duration)
-            this.stickers[id].box.animate(
-                { opacity: 1 },
-                {
-                    duration: duration,
-                    onChange: () => STICKER_GROUP.canvas?.renderAll(),
-                },
-            );
+        }
     }
-    handleStickerClear(id?: string, duration?: number) {
-        if (id) {
-            if (duration) {
-                this.isInAnimation = true;
-                this.stickers[id].box.animate(
-                    { opacity: 0 },
-                    {
-                        duration: duration,
-                        onChange: () => STICKER_GROUP.canvas?.renderAll(),
-                        onComplete: () => {
-                            STICKER_GROUP.remove(this.stickers[id].box);
-                            delete this.stickers[id];
-                            this.isInAnimation = false;
-                        },
-                    },
-                );
+    clearSticker(canvas: StaticCanvas, options?: { id?: string; fadetime?: number; block: boolean }) {
+        if (options?.id) {
+            if (options.fadetime) {
+                if (options.block) this.isInAnimation = true;
+                fadeout(canvas, this.stickers[options.id].box, options.fadetime, () => {
+                    STICKER_GROUP.remove(this.stickers[options.id!].box);
+                    delete this.stickers[options.id!];
+                    if (options?.block) this.isInAnimation = false;
+                });
             } else {
-                STICKER_GROUP.remove(this.stickers[id].box);
-                delete this.stickers[id];
+                STICKER_GROUP.remove(this.stickers[options.id].box);
+                delete this.stickers[options.id];
             }
         } else {
             for (const key in this.stickers) STICKER_GROUP.remove(this.stickers[key].box);
@@ -230,7 +189,7 @@ export class TextCommandsService {
         buttons.set('visible', true);
     }
 
-    handleChoice(mouseX: number, mouseY: number) {
+    handleChoice(canvas: StaticCanvas, mouseX: number, mouseY: number) {
         if (this.dialogChoices) {
             let buttons;
             const values = Object.keys(this.dialogChoices);
@@ -244,7 +203,7 @@ export class TextCommandsService {
                     this.choosenAnswer = values[i];
 
                     buttons.set('visible', false);
-                    buttons.canvas?.renderAll();
+                    canvas.renderAll();
                 }
             }
 
@@ -254,7 +213,7 @@ export class TextCommandsService {
         return false;
     }
 
-    handleTyping(command: genericCommand | dialogCommand) {
+    handleTyping(canvas: StaticCanvas, command: Command) {
         if (!this.typewriterInterval) return false;
 
         clearInterval(this.typewriterInterval);
@@ -265,7 +224,7 @@ export class TextCommandsService {
             });
         else if (SUBTITLE_TEXTBOX.visible)
             SUBTITLE_TEXTBOX.set({
-                ...this.parserService.parseRichText((command as genericCommand).parameters!['text']),
+                ...this.parserService.parseRichText(command.parameters!['text']),
             });
         else if (command.command === 'sticker') {
             this.stickers[command.parameters!['id']].box.dispose();
@@ -278,8 +237,34 @@ export class TextCommandsService {
                 ...this.parserService.parseRichText(command.content!),
             });
 
-        DIALOG_TEXTBOX.canvas?.renderAll();
+        canvas.renderAll();
 
         return true;
+    }
+
+    private createTypewriterEffect(
+        canvas: StaticCanvas,
+        textbox: Textbox,
+        text: string,
+        options: {
+            multi?: string[];
+            delay: number;
+        },
+    ) {
+        let letterIdx = 0;
+        this.typewriterInterval = setInterval(() => {
+            textbox.set({
+                ...this.parserService.parseRichText(
+                    (options.multi ?? []).slice(0, -1).join('') + text.slice(0, letterIdx),
+                ),
+            });
+            canvas.renderAll();
+
+            letterIdx++;
+            if (letterIdx > this.parserService.parseRichText(text).text.length) {
+                clearInterval(this.typewriterInterval!);
+                this.typewriterInterval = null;
+            }
+        }, options.delay);
     }
 }

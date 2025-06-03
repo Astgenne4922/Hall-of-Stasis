@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FabricImage, StaticCanvas } from 'fabric';
 import { BG_URL, HEIGHT, WIDTH } from '../../story-player.constants';
-import { genericCommand, dialogCommand } from '../command.model';
+import { Command } from '../command.model';
+import { fadein, fadeout } from '../common.animation';
 
 @Injectable({
     providedIn: 'root',
@@ -35,43 +36,33 @@ export class ImageCommandsService {
 
         if (options?.fadetime) {
             if (options?.block) this.isInAnimation = true;
-            canvas.backgroundImage.animate(
-                { opacity: 1 },
-                {
-                    duration: options?.fadetime,
-                    onChange: () => canvas.renderAll(),
-                    onComplete: () => {
-                        if (options?.block) this.isInAnimation = false;
-                    },
-                },
-            );
+            fadein(canvas, canvas.backgroundImage, options.fadetime, () => {
+                if (options?.block) this.isInAnimation = false;
+            });
         }
     }
     handleBackgroundClear(canvas: StaticCanvas, options?: { fadetime?: number; block?: boolean }) {
+        if (!canvas.backgroundImage) return;
+
         if (options?.fadetime) {
             if (options?.block) this.isInAnimation = true;
-            canvas.backgroundImage?.animate(
-                { opacity: 0 },
-                {
-                    duration: options?.fadetime,
-                    onChange: () => canvas.renderAll(),
-                    onComplete: () => {
-                        if (options?.block) this.isInAnimation = false;
-                    },
-                },
-            );
+            fadeout(canvas, canvas.backgroundImage, options.fadetime, () => {
+                if (options?.block) this.isInAnimation = false;
+            });
+        } else {
+            canvas.backgroundImage = undefined;
         }
     }
 
     loadImages(
         script: {
             original: string;
-            parsed: genericCommand | dialogCommand;
+            parsed: Command;
         }[],
     ) {
         this.backgroundImages =
             script.reduce((acc: { [key: string]: HTMLImageElement }, e) => {
-                const bg = (e.parsed as genericCommand).parameters?.['image']?.toLowerCase();
+                const bg = e.parsed.parameters?.['image']?.toLowerCase();
                 if (e.parsed.command === 'background' && bg && !acc[bg]) {
                     acc[bg] = new Image();
                     acc[bg].src = `${BG_URL}/${bg}.png`;
