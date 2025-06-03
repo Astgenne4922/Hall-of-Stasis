@@ -13,6 +13,7 @@ import {
 } from './services/text-commands/text-commands.constants';
 import { TextCommandsService } from './services/text-commands/text-commands.service';
 import { HEIGHT, WIDTH } from './story-player.constants';
+import { IMAGE_OVERLAY } from './services/image-commands/image-commands.constants';
 
 @Component({
     selector: 'hos-story-player',
@@ -54,6 +55,7 @@ export class FabricStoryPlayerComponent implements OnInit {
         this.resizeCanvas();
 
         this.canvas.add(
+            IMAGE_OVERLAY,
             DIALOG_GROUP,
             SUBTITLE_TEXTBOX,
             STICKER_GROUP,
@@ -101,7 +103,7 @@ export class FabricStoryPlayerComponent implements OnInit {
                         block: line.parameters['block'] === 'true',
                     });
                 } else
-                    this.imageCommandsService.handleBackgroundClear(this.canvas, {
+                    this.imageCommandsService.clearBackground(this.canvas, {
                         fadetime: line.parameters?.['fadetime'] ? +line.parameters?.['fadetime'] * 1000 : undefined,
                         block: line.parameters?.['block'] === 'true',
                     });
@@ -110,14 +112,78 @@ export class FabricStoryPlayerComponent implements OnInit {
                     setTimeout(() => this.click(), +line.parameters?.['fadetime'] * 1000);
                 else this.click();
                 break;
+            case 'backgroundtween':
+                if (line.parameters)
+                    this.imageCommandsService.handleBackgroundTween(this.canvas, {
+                        xFrom: line.parameters['xFrom'] ? +line.parameters['xFrom'] : undefined,
+                        yFrom: line.parameters['yFrom'] ? +line.parameters['yFrom'] : undefined,
+                        xTo: line.parameters['xTo'] ? +line.parameters['xTo'] : undefined,
+                        yTo: line.parameters['yTo'] ? +line.parameters['yTo'] : undefined,
+                        xScaleFrom: line.parameters['xScaleFrom'] ? +line.parameters['xScaleFrom'] : undefined,
+                        yScaleFrom: line.parameters['yScaleFrom'] ? +line.parameters['yScaleFrom'] : undefined,
+                        xScaleTo: line.parameters['xScaleTo'] ? +line.parameters['xScaleTo'] : undefined,
+                        yScaleTo: line.parameters['yScaleTo'] ? +line.parameters['yScaleTo'] : undefined,
+                        duration: line.parameters['duration'] ? +line.parameters['duration'] * 1000 : undefined,
+                        block: line.parameters?.['block'] === 'true',
+                        ease: undefined,
+                    });
+
+                if (line.parameters?.['duration'] && line.parameters?.['block'] === 'true')
+                    setTimeout(() => this.click(), +line.parameters?.['duration'] * 1000);
+                else this.click();
+                break;
+            case 'image':
+                if (line.parameters && line.parameters!['image']) {
+                    this.imageCommandsService.handleImage(this.canvas, line.parameters['image'].toLowerCase(), {
+                        x: line.parameters['x'] ? +line.parameters['x'] : undefined,
+                        y: line.parameters['y'] ? +line.parameters['y'] : undefined,
+                        xScale: line.parameters['xScale'] ? +line.parameters['xScale'] : undefined,
+                        yScale: line.parameters['yScale'] ? +line.parameters['yScale'] : undefined,
+                        fadetime: line.parameters['fadetime'] ? +line.parameters['fadetime'] * 1000 : undefined,
+                        block: line.parameters['block'] === 'true',
+                    });
+                } else
+                    this.imageCommandsService.clearImage(this.canvas, {
+                        fadetime: line.parameters?.['fadetime'] ? +line.parameters?.['fadetime'] * 1000 : undefined,
+                        block: line.parameters?.['block'] === 'true',
+                    });
+
+                if (line.parameters?.['fadetime'] && line.parameters?.['block'] === 'true')
+                    setTimeout(() => this.click(), +line.parameters?.['fadetime'] * 1000);
+                else this.click();
+                break;
+            case 'imagetween':
+                if (line.parameters)
+                    this.imageCommandsService.handleImageTween(this.canvas, {
+                        xFrom: line.parameters['xFrom'] ? +line.parameters['xFrom'] : undefined,
+                        yFrom: line.parameters['yFrom'] ? +line.parameters['yFrom'] : undefined,
+                        xTo: line.parameters['xTo'] ? +line.parameters['xTo'] : undefined,
+                        yTo: line.parameters['yTo'] ? +line.parameters['yTo'] : undefined,
+                        xScaleFrom: line.parameters['xScaleFrom'] ? +line.parameters['xScaleFrom'] : undefined,
+                        yScaleFrom: line.parameters['yScaleFrom'] ? +line.parameters['yScaleFrom'] : undefined,
+                        xScaleTo: line.parameters['xScaleTo'] ? +line.parameters['xScaleTo'] : undefined,
+                        yScaleTo: line.parameters['yScaleTo'] ? +line.parameters['yScaleTo'] : undefined,
+                        duration: line.parameters['duration'] ? +line.parameters['duration'] * 1000 : undefined,
+                        block: line.parameters?.['block'] === 'true',
+                        ease: undefined,
+                    });
+
+                if (line.parameters?.['duration'] && line.parameters?.['block'] === 'true')
+                    setTimeout(() => this.click(), +line.parameters?.['duration'] * 1000);
+                else this.click();
+                break;
             case 'dialog':
                 if (line.content)
                     this.textCommandsService.handleDialog(this.canvas, line.content, line.parameters?.['name']);
-                else
+                else {
                     this.textCommandsService.clearDialog(this.canvas, {
                         fadetime: line.parameters?.['fadetime'] ? +line.parameters?.['fadetime'] * 1000 : undefined,
                         block: line.parameters?.['block'] === 'true',
                     });
+                    if (line.parameters?.['fadetime'] && line.parameters?.['block'] === 'true')
+                        setTimeout(() => this.click(), +line.parameters?.['fadetime'] * 1000);
+                    else this.click();
+                }
                 break;
             case 'multiline':
                 this.textCommandsService.handleMultiline(this.canvas, line.parameters!['name'], line.content!, {
@@ -127,8 +193,10 @@ export class FabricStoryPlayerComponent implements OnInit {
 
                 break;
             case 'subtitle':
-                if (!line.parameters) this.textCommandsService.clearSubtitle();
-                else
+                if (!line.parameters) {
+                    this.textCommandsService.clearSubtitle();
+                    this.click();
+                } else
                     this.textCommandsService.handleSubtitle(this.canvas, line.parameters!['text'], {
                         x: +line.parameters!['x'],
                         y: +line.parameters!['y'],
@@ -147,7 +215,9 @@ export class FabricStoryPlayerComponent implements OnInit {
                         fadetime: duration ? +duration * 1000 : undefined,
                         block: line.parameters!['block'] === 'true',
                     });
-                    this.click();
+                    if (duration && line.parameters?.['block'] === 'true')
+                        setTimeout(() => this.click(), +duration * 1000);
+                    else this.click();
                 } else {
                     this.textCommandsService.handleSticker(
                         this.canvas,
