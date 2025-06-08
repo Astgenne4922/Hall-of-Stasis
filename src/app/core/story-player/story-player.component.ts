@@ -21,7 +21,7 @@ import { IMAGE_OVERLAY } from './services/image-commands/image-commands.constant
     styleUrls: ['./story-player.component.scss'],
     host: { '(window:resize)': 'resizeCanvas()' },
 })
-export class FabricStoryPlayerComponent implements OnInit {
+export class StoryPlayerComponent implements OnInit {
     textCommandsService = inject(TextCommandsService);
     imageCommandsService = inject(ImageCommandsService);
     parserService = inject(ScriptParserService);

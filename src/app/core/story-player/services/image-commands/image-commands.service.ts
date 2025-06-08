@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FabricImage, FabricObject, StaticCanvas } from 'fabric';
+import { FabricImage, FabricObject, Point, StaticCanvas } from 'fabric';
 import { HEIGHT, WIDTH } from '../../story-player.constants';
 import { Command } from '../command.model';
 import { fadein, fadeout } from '../common.animation';
@@ -27,10 +27,10 @@ export class ImageCommandsService {
         },
     ) {
         const properties = {
-            left: options?.x ?? 0,
-            top: options?.y ?? 0,
-            scaleX: (options?.xScale ?? 1) * (WIDTH / this.loadedImages[image].width),
-            scaleY: (options?.yScale ?? 1) * (HEIGHT / this.loadedImages[image].height),
+            // left: options?.x ?? 0,
+            // top: options?.y ?? 0,
+            // scaleX: (options?.xScale ?? 1) * (WIDTH / this.loadedImages[image].width),
+            // scaleY: (options?.yScale ?? 1) * (HEIGHT / this.loadedImages[image].height),
             opacity: options?.fadetime ? 0 : 1,
         };
 
@@ -38,6 +38,16 @@ export class ImageCommandsService {
             (canvas.backgroundImage as FabricImage).setElement(this.loadedImages[image]);
             (canvas.backgroundImage as FabricImage).set({ ...properties });
         } else canvas.backgroundImage = new FabricImage(this.loadedImages[image], properties);
+
+        // canvas.backgroundImage.scaleToWidth(WIDTH * (options?.xScale ?? 1));
+        // canvas.backgroundImage.scaleToHeight(HEIGHT * (options?.yScale ?? 1));
+        canvas.backgroundImage.scaleToWidth(1500 * (options?.xScale ?? 1));
+        canvas.backgroundImage.scaleToHeight(843 * (options?.yScale ?? 1));
+        canvas.backgroundImage.setPositionByOrigin(
+            new Point(WIDTH / 2 - (options?.x ?? 0), HEIGHT / 2 - (options?.y ?? 0)),
+            'center',
+            'center',
+        );
 
         if (options?.fadetime) {
             if (options?.block) this.isInAnimation = true;
@@ -90,10 +100,10 @@ export class ImageCommandsService {
         },
     ) {
         const properties = {
-            left: options?.x ?? 0,
-            top: options?.y ?? 0,
-            scaleX: (options?.xScale ?? 1) * (WIDTH / this.loadedImages[image].width),
-            scaleY: (options?.yScale ?? 1) * (HEIGHT / this.loadedImages[image].height),
+            // left: options?.x ?? 0,
+            // top: options?.y ?? 0,
+            // scaleX: (options?.xScale ?? 1) * (WIDTH / this.loadedImages[image].width),
+            // scaleY: (options?.yScale ?? 1) * (HEIGHT / this.loadedImages[image].height),
             opacity: options?.fadetime ? 0 : 1,
         };
 
@@ -102,11 +112,24 @@ export class ImageCommandsService {
             (IMAGE_OVERLAY.item(0) as FabricImage).set({ ...properties });
         } else IMAGE_OVERLAY.add(new FabricImage(this.loadedImages[image], properties));
 
+        (IMAGE_OVERLAY.item(0) as FabricImage).scaleToWidth(WIDTH * (options?.xScale ?? 1));
+        (IMAGE_OVERLAY.item(0) as FabricImage).scaleToHeight(HEIGHT * (options?.yScale ?? 1));
+        // (IMAGE_OVERLAY.item(0) as FabricImage).setPositionByOrigin(
+        //     new Point(WIDTH / 2 - (options?.x ?? 0), HEIGHT / 2 - (options?.y ?? 0)),
+        //     'center',
+        //     'center',
+        // );
+        (IMAGE_OVERLAY.item(0) as FabricImage).setPositionByOrigin(
+            new Point(-(options?.x ?? 0), -(options?.y ?? 0)),
+            'center',
+            'center',
+        );
+
         IMAGE_OVERLAY.set('visible', true);
 
         if (options?.fadetime) {
             if (options?.block) this.isInAnimation = true;
-            fadein(canvas, IMAGE_OVERLAY.item(1), options.fadetime, () => {
+            fadein(canvas, IMAGE_OVERLAY.item(0), options.fadetime, () => {
                 if (options?.block) this.isInAnimation = false;
             });
         }
@@ -164,15 +187,16 @@ export class ImageCommandsService {
             ease?: string;
         },
     ) {
-        console.log(DIALOG_GROUP);
-
         if (options.block) this.isInAnimation = true;
+        console.log(imageObj.scaleX);
+        console.log(imageObj.scaleY);
+
         imageObj.animate(
             {
-                left: options.xTo!,
-                top: options.yTo!,
-                scaleX: options.xScaleTo! * (WIDTH / imageObj.get('width')),
-                scaleY: options.yScaleTo! * (HEIGHT / imageObj.get('height')),
+                // left: options.xTo!,
+                // top: options.yTo!,
+                scaleX: options.xScaleTo!,
+                scaleY: options.yScaleTo!,
             },
             {
                 duration: options.duration,

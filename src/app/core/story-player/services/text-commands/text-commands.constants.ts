@@ -8,7 +8,7 @@ export const DECISION_BUTTON_GROUP1 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),
@@ -33,7 +33,7 @@ export const DECISION_BUTTON_GROUP2 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),
@@ -53,7 +53,7 @@ export const DECISION_BUTTON_GROUP2 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),
@@ -78,7 +78,7 @@ export const DECISION_BUTTON_GROUP3 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),
@@ -98,7 +98,7 @@ export const DECISION_BUTTON_GROUP3 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),
@@ -118,7 +118,7 @@ export const DECISION_BUTTON_GROUP3 = new Group(
                 new Rect({
                     fill: '#313131',
                     stroke: 'white',
-                    strokeWidth: 3,
+                    strokeWidth: 1,
                     width: 650,
                     height: 50,
                 }),

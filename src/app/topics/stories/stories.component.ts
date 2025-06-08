@@ -1,13 +1,13 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FabricStoryPlayerComponent } from '../../core/fabric-story-player/story-player.component';
+import { StoryPlayerComponent } from '../../core/story-player/story-player.component';
 
 @Component({
     selector: 'hos-stories',
     templateUrl: './stories.component.html',
     styleUrls: ['./stories.component.scss'],
-    imports: [FormsModule, FabricStoryPlayerComponent],
+    imports: [FormsModule, StoryPlayerComponent],
 })
 export class StoriesComponent {
     storyCodes = httpResource<{ code: string; name: string; type: string }[]>({
